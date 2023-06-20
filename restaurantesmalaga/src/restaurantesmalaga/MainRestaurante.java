@@ -18,6 +18,8 @@ public class MainRestaurante {
 	
 	private static final String RUTA_FICHERO = "restaurantes.txt";
 	
+	//private Restaurante reserva;
+	
 	public static List<Restaurante> cargarRestaurantes (List<String> lineas)
 	{
 		List<Restaurante> lRestaurantes = null;
@@ -58,14 +60,125 @@ public class MainRestaurante {
 		File file = new File(RUTA_FICHERO);
 		if (file.exists())
 		{
-			System.out.println("FICHERO EXISTE!, a parsearlo");
+			System.out.println("FICHERO EXISTE!, a parsearlo :)");
 			Path path = file.toPath();//convierto a PATH para usar el nuevo API y así ir más rápido
 			List<String> lineas = Files.readAllLines(path);//leo todo el fichero en una línea
 			List<Restaurante> listRest =  cargarRestaurantes(lineas);
 			System.out.println("La lista tiene " +listRest.size() + " restaurantes");
+			mostrarRestaurantes (listRest);
+			
+			Restaurante restNuevo = new Restaurante();
+			/**
+			 * McDonadls
+MC Donadls Plza de la Marina
+www.mcdonalds.com
+https://goo.gl/maps/DUmVjnSZeX6Y9n448
+36.7184846
+-4.4909181
+centro
+hamburguesas, patas fritas, helados
+			 */
+			restNuevo.setNombre("McDonadls1");
+			restNuevo.setDireccion("MC Donadls Plza de la Marina");
+			restNuevo.setWeb("www.mcdonalds.com");
+			restNuevo.setFichaGoogle("https://goo.gl/maps/DUmVjnSZeX6Y9n448");
+			restNuevo.setLatitud(36.7184846f);
+			restNuevo.setLongitud(-4.4909181f);
+			restNuevo.setBarrio("centro");
+			restNuevo.setEspecialidades(List.of("hamburguesas", "patas fritas", "helados"));
+			
+			Restaurante r5 = listRest.get(4);
+			boolean esta = buscarRestaurante(listRest, r5);
+			System.out.println("R5 está en la lista " + esta);
+		    esta = buscarRestaurante(listRest, restNuevo);
+			System.out.println("RNUEVO está en la lista " + esta);
+			
 		} else {
 			System.out.println("NO EXISTE el fichero en esa ruta :(");
 		}
 		
 	}
+	
+	public static void mostrarRestaurantes (List<Restaurante> listRest)
+	{
+		System.out.println("Mostrando restaurantes...");
+		for (Restaurante r : listRest)
+		{
+			System.out.println(r.toString());
+		}
+	}
+	
+	public static boolean buscarRestaurante (List<Restaurante> listRest, 
+			Restaurante restauranteBuscado)
+	{
+		boolean estaRestaurante = false;
+		int pos_actual = 0;
+		int longitud = listRest.size();
+		Restaurante restauranteAux = null;
+			
+			while (pos_actual<longitud && !estaRestaurante)
+			{
+				restauranteAux = listRest.get(pos_actual);
+				estaRestaurante = restauranteAux.equals(restauranteBuscado);
+				pos_actual = pos_actual+1;
+			}
+		
+		return estaRestaurante;
+		
+	}
+	
+	
+	/**
+	 * 1) BUSCAR POR ESPECIALIDAD
+2) BUSCAR POR NOMBRE
+3) BUSCAR POR BARRIO
+	 */
+	
+	
+	//1) BUSCAR POR ESPECIALIDAD
+	public static List<Restaurante> buscarRestaurantesPorEspecialidad (List<Restaurante> lRestaurantes, String especialidad)
+	{
+		List<Restaurante> listaRestaurantesPorEspecialidad = null;
+		List<String> listaEspecialidesActual = null;
+		
+			listaRestaurantesPorEspecialidad = new ArrayList<>();
+			for (Restaurante restActual : lRestaurantes)
+			{
+				//obtengo especialidades
+				listaEspecialidesActual = restActual.getEspecialidades();
+				//??está la especialidad aquí?¿
+				if (listaEspecialidesActual.contains(especialidad))
+				{
+					//la especialidad está en la lista de especialades del restaurante
+					listaRestaurantesPorEspecialidad.add(restActual);
+				}
+			}
+		
+		return listaRestaurantesPorEspecialidad;
+	}
+	
+	public static List<Restaurante> buscarRestaurantesPorNombre (List<Restaurante> lRestaurantes, String nombre)
+	{
+		List<Restaurante> listaRestNombres = null;
+		
+		return listaRestNombres;
+	}
+	
+	
+	public static List<Restaurante> buscarRestaurantesPorBarrio (List<Restaurante> lRestaurantes, String barrio)
+	{
+		List<Restaurante> listaRestBarrios = null;
+		
+		return listaRestBarrios;
+	}
+	
+	
+	
 }
+
+
+
+
+
+
+
