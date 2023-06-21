@@ -20,6 +20,14 @@ public class MainRestaurante {
 	
 	//private Restaurante reserva;
 	
+	private static void quitarBlancos (String[] especialidades)
+	{
+		for (int z=0; z<especialidades.length;z++)
+		{
+			especialidades[z]=especialidades[z].trim();//quita espacios por delante y por detrás
+		}
+	}
+	
 	public static List<Restaurante> cargarRestaurantes (List<String> lineas)
 	{
 		List<Restaurante> lRestaurantes = null;
@@ -40,6 +48,7 @@ public class MainRestaurante {
 				case 7: restauranteAux.setBarrio(linea); break;
 				case 8: 
 					String[] especialidades = linea.split(",");//troceo esp1, esp2, esp3
+					quitarBlancos (especialidades);
 					List<String> lespecialidades = Arrays.asList(especialidades);//paso de Array a Lista
 					restauranteAux.setEspecialidades(lespecialidades);
 					lRestaurantes.add(restauranteAux);
@@ -65,7 +74,7 @@ public class MainRestaurante {
 			List<String> lineas = Files.readAllLines(path);//leo todo el fichero en una línea
 			List<Restaurante> listRest =  cargarRestaurantes(lineas);
 			System.out.println("La lista tiene " +listRest.size() + " restaurantes");
-			mostrarRestaurantes (listRest);
+			//mostrarRestaurantes (listRest);
 			
 			Restaurante restNuevo = new Restaurante();
 			/**
@@ -92,7 +101,14 @@ hamburguesas, patas fritas, helados
 			System.out.println("R5 está en la lista " + esta);
 		    esta = buscarRestaurante(listRest, restNuevo);
 			System.out.println("RNUEVO está en la lista " + esta);
-			
+			List<Restaurante> lre = buscarRestaurantesPorEspecialidad(listRest, "pescao");
+			System.out.println("Mostrando rest con especialidad pescao" );
+			mostrarRestaurantes(lre);
+			lre = buscarRestaurantesPorEspecialidad(listRest, "helados");
+			System.out.println("Mostrando rest con especialidad helados" );
+			mostrarRestaurantes(lre);
+			System.out.println("Mostrando rest con especialidad helados CON LAMBDa" );
+			mostrarRestaurantesLambda(lre);
 		} else {
 			System.out.println("NO EXISTE el fichero en esa ruta :(");
 		}
@@ -108,6 +124,10 @@ hamburguesas, patas fritas, helados
 		}
 	}
 	
+	public static void mostrarRestaurantesLambda (List<Restaurante> listRest)
+	{
+		listRest.forEach(restaurante->System.out.println(restaurante));
+	}
 	public static boolean buscarRestaurante (List<Restaurante> listRest, 
 			Restaurante restauranteBuscado)
 	{
@@ -161,16 +181,43 @@ hamburguesas, patas fritas, helados
 	{
 		List<Restaurante> listaRestNombres = null;
 		
+			listaRestNombres = new ArrayList<Restaurante>();
+			for (Restaurante r :listaRestNombres)
+			{
+				//si coincide el nombre, la añado
+				if (r.getNombre().indexOf(nombre)!=-1)
+				{
+					listaRestNombres.add(r);
+				}
+			}
+		
 		return listaRestNombres;
 	}
 	
 	
-	public static List<Restaurante> buscarRestaurantesPorBarrio (List<Restaurante> lRestaurantes, String barrio)
+	public static List<Restaurante> buscarRestaurantesPorBarrioLambda (List<Restaurante> lRestaurantes, String barrio)
 	{
 		List<Restaurante> listaRestBarrios = null;
 		
+			listaRestBarrios = lRestaurantes.stream().filter((Restaurante r)->{return r.getBarrio().contains(barrio);}).toList();
+		
 		return listaRestBarrios;
 	}
+	
+	//Busqueda por Barrio
+	  public static List<Restaurante> buscarRestaurantesPorBarrio (List<Restaurante> lRestaurantes, String barrio)
+		{
+			List<Restaurante> listaRestBarrios = null;
+			listaRestBarrios = new ArrayList<>();
+
+			  for (Restaurante restActual : lRestaurantes) {
+			    if (restActual.getBarrio().equalsIgnoreCase(barrio)) {
+			      listaRestBarrios.add(restActual);
+			    }
+			  }
+			return listaRestBarrios;
+		}
+	
 	
 	
 	
