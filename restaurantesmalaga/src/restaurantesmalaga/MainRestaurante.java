@@ -9,9 +9,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Supplier;
 
+import restaurantesmalaga.model.ComparadorRestaurantes;
 import restaurantesmalaga.model.Restaurante;
 
 public class MainRestaurante {
@@ -51,6 +55,21 @@ public class MainRestaurante {
 					quitarBlancos (especialidades);
 					List<String> lespecialidades = Arrays.asList(especialidades);//paso de Array a Lista
 					restauranteAux.setEspecialidades(lespecialidades);
+					
+					break;
+				case 9: 
+					//restauranteAux.setPrecioMedio(Integer.parseInt(linea));
+					
+					Supplier<Integer> generaPrecioMedio = ()->{
+						int numeroAleatorio = 0;
+						Random random = new Random();
+						numeroAleatorio = 20+ random.nextInt(100);
+						return numeroAleatorio;
+					};	
+					
+				
+					
+					restauranteAux.setPrecioMedio(generaPrecioMedio.get());
 					lRestaurantes.add(restauranteAux);
 					
 					numlinea=0;
@@ -73,20 +92,21 @@ public class MainRestaurante {
 			Path path = file.toPath();//convierto a PATH para usar el nuevo API y así ir más rápido
 			List<String> lineas = Files.readAllLines(path);//leo todo el fichero en una línea
 			List<Restaurante> listRest =  cargarRestaurantes(lineas);
-			System.out.println("La lista tiene " +listRest.size() + " restaurantes");
-			//mostrarRestaurantes (listRest);
+			System.out.println("La lista ORIGINAL tiene " +listRest.size() + " restaurantes");
+			mostrarRestaurantes (listRest);
+			
+			
+			System.out.println("La lista ORDENADA por precio (natural) tiene " +listRest.size() + " restaurantes");
+			Collections.sort(listRest);//NATURAL
+			mostrarRestaurantes (listRest);
+			
+			System.out.println("La lista ORDENADA por nombre (total) tiene " +listRest.size() + " restaurantes");
+			ComparadorRestaurantes cr = new ComparadorRestaurantes();
+			Collections.sort(listRest, cr);//TOTAL
+			mostrarRestaurantes (listRest);
 			
 			Restaurante restNuevo = new Restaurante();
-			/**
-			 * McDonadls
-MC Donadls Plza de la Marina
-www.mcdonalds.com
-https://goo.gl/maps/DUmVjnSZeX6Y9n448
-36.7184846
--4.4909181
-centro
-hamburguesas, patas fritas, helados
-			 */
+			
 			restNuevo.setNombre("McDonadls1");
 			restNuevo.setDireccion("MC Donadls Plza de la Marina");
 			restNuevo.setWeb("www.mcdonalds.com");
@@ -108,6 +128,10 @@ hamburguesas, patas fritas, helados
 			System.out.println("Mostrando rest con especialidad helados" );
 			mostrarRestaurantes(lre);
 			System.out.println("Mostrando rest con especialidad helados CON LAMBDa" );
+			mostrarRestaurantesLambda(lre);
+			
+			lre = buscarPorPrecioMedio(listRest, 50);
+			System.out.println("Mostrando rest con precio menor o a = a 50" );
 			mostrarRestaurantesLambda(lre);
 		} else {
 			System.out.println("NO EXISTE el fichero en esa ruta :(");
@@ -218,6 +242,19 @@ hamburguesas, patas fritas, helados
 			return listaRestBarrios;
 		}
 	
+	  
+	  public static List<Restaurante> buscarPorPrecioMedio(List<Restaurante> listRest, float presupuesto){
+			List<Restaurante> lRestConPrecioMaximoBuscado = null;
+			
+			
+			lRestConPrecioMaximoBuscado = listRest
+			.stream()
+			.filter(r -> {return (r.getPrecioMedio()<=presupuesto);})
+			.toList();
+			
+			return lRestConPrecioMaximoBuscado;
+			
+		}
 	
 	
 	
