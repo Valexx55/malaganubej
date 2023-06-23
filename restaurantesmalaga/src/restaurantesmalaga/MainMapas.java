@@ -52,37 +52,47 @@ public class MainMapas {
 			
 			Map<String, List<Restaurante>> mapaRestaurantesPorBarrios = null;
 			mapaRestaurantesPorBarrios = crearMapRestaurantesPorBarrios(listRest);
-			Set<String> clavesMapa = mapaRestaurantesPorBarrios.keySet();
-			for (String barrio : clavesMapa)
+			mostrarMapa (mapaRestaurantesPorBarrios);
+			List<Restaurante> lr = getRestaurantesMasCarosPorBarrio(mapaRestaurantesPorBarrios);
+			System.out.println("Mostrando los más caros de cada barrio");
+			for (Restaurante r : lr)
 			{
-				List<Restaurante> lrb = mapaRestaurantesPorBarrios.get(barrio);
-				System.out.println("BARRIO =  " + barrio);
-				for (Restaurante rb : lrb)
-				{
-					System.out.println(rb.toString());
-				}
+				System.out.println(r.toString());
 			}
-			
 		}
 		else {
 			System.out.println("FICHERO NO EXISTE!");
 		}
 	}
 	
+	private static void mostrarMapa (Map<String, List<Restaurante>> mapa)
+	{
+		Set<String> clavesMapa = mapa.keySet();
+		for (String barrio : clavesMapa)
+		{
+			List<Restaurante> lrb = mapa.get(barrio);
+			System.out.println("BARRIO =  " + barrio);
+			for (Restaurante rb : lrb)
+			{
+				System.out.println(rb.toString());
+			}
+		}
+	}
 	
+	
+	//recorro la lista
+		//si el barrio ya está en el mapa
+			//añado restaurante a esa lista
+		//si no, creo lista nueva y add ese restaurante
 	public static Map<String, List<Restaurante>> crearMapRestaurantesPorBarrios (List<Restaurante> lr)
 	{
 		Map<String, List<Restaurante>> mapa = new HashMap<>();
-		
-		//recorro la lista
-			//si el barrio ya está en el mapa
-				//añado restaurante a esa lista
-			//si no, creo lista nueva y add ese restaurante
+	
 		
 			for (Restaurante r : lr)
 			{
 				List<Restaurante> lrb = mapa.get(r.getBarrio());
-				if (lrb!=null)
+				if (lrb!=null)//¿¿ya hay restaurantes de ese barrio
 				{
 					System.out.println("ya existen restaurantes con ese barrio");
 					lrb.add(r);
@@ -96,6 +106,69 @@ public class MainMapas {
 		return mapa;
 		
 	}
+	
+	private static Restaurante  obtenerMasCaro (List<Restaurante> lrb)
+	{
+		Restaurante restMasCaro = null;
+		int precioMayor = 0;
+		
+			for (Restaurante r:lrb)
+			{
+				if (r.getPrecioMedio()>precioMayor)
+				{
+					restMasCaro = r;
+					precioMayor = r.getPrecioMedio();
+				}
+			}
+		
+		return restMasCaro;
+	}
+	
+	private static Restaurante  obtenerMasCaro2 (List<Restaurante> lrb)
+	{
+		Restaurante restMasCaro = null;
+		int precioMayor = 0;
+		
+			Collections.sort(lrb);
+			restMasCaro = lrb.get(lrb.size()-1);
+		
+		return restMasCaro;
+	}
+	
+	//Partiendo del mapa de restaurantes por barrios, obtener una lista
+	//de los restaurantes más caros de cada barrio
+	public static
+	List<Restaurante> getRestaurantesMasCarosPorBarrio (Map<String, List<Restaurante>> mapaR)
+	{
+		List<Restaurante> listaCaros = new ArrayList<>();
+		
+		//TODO recorrer el mapa por barrios y quedarme con el más caro de cada barrio
+		Set<String> barrios = mapaR.keySet();
+		for (String barrio : barrios)
+		{
+			List<Restaurante> lrb = mapaR.get(barrio);
+			Restaurante rmascaro = obtenerMasCaro (lrb);
+			listaCaros.add(rmascaro);
+		}
+		
+		
+		return listaCaros;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

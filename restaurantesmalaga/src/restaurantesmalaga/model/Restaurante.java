@@ -47,7 +47,7 @@ public class Restaurante implements Comparable<Restaurante> {
 
 	@Override
 	public String toString() {
-		return "Restaurante [nombre=" + nombre + ", direccion=" + direccion + ", web=" + web + ", fichaGoogle="
+		return "Restaurante [nombre=" + this.nombre + ", direccion=" + direccion + ", web=" + web + ", fichaGoogle="
 				+ fichaGoogle + ", latitud=" + latitud + ", longitud=" + longitud + ", barrio=" + barrio
 				+ ", especialidades=" + especialidades + ", precioMedio=" + precioMedio + "]";
 	}
