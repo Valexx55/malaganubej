@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.arelance.nube.repository.entity.Restaurante;
@@ -60,8 +61,8 @@ public class RestauranteController {
 		ResponseEntity<?> responseEntity = null;
 		Iterable<Restaurante> lista_Restaurantes = null;
 		
-			String saludo = "HOLA";
-			saludo.charAt(10);
+			//String saludo = "HOLA";
+			//saludo.charAt(10);
 			lista_Restaurantes = this.restauranteService.consultarTodos();
 			responseEntity = ResponseEntity.ok(lista_Restaurantes);
 		
@@ -112,7 +113,18 @@ public class RestauranteController {
 			@PathVariable Long id)
 	{
 		ResponseEntity<?> responseEntity = null;
+		Optional<Restaurante> opRest = null;
+			
+			 opRest = this.restauranteService.modificarRestaurante(id, restaurante);
+			 if (opRest.isPresent())
+			 {
+				 Restaurante rm =  opRest.get();
+				 responseEntity = ResponseEntity.ok(rm);
+			 } else {
+				 responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			 }
 		
+			 
 		return responseEntity;
 	} 
 	
@@ -130,6 +142,20 @@ public class RestauranteController {
 		return responseEntity;
 	}
 
+	//GET http://localhost:8081/restaurante/buscarPorPrecio?preciomin=10&preciomax=40
+	@GetMapping("/buscarPorPrecio")
+	public ResponseEntity<?> listarPorRangoPrecio (
+			@RequestParam(name = "preciomin") int preciomin,
+			@RequestParam(name = "preciomax") int preciomax)
+	{
+		ResponseEntity<?> responseEntity = null;
+		Iterable<Restaurante> lista_Restaurantes = null;
+			
+			lista_Restaurantes = this.restauranteService.buscarPorRangoPrecio(preciomin, preciomax);
+			responseEntity = ResponseEntity.ok(lista_Restaurantes);
+		
+		return responseEntity;
+	}
 	
 	
 	

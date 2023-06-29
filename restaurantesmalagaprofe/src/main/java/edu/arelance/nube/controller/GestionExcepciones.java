@@ -28,5 +28,5 @@ public class GestionExcepciones {
 		
 		return responseEntity;
 	}
-
+	
 }
