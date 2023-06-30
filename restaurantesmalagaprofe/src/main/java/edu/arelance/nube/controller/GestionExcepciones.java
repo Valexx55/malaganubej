@@ -1,5 +1,7 @@
 package edu.arelance.nube.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -8,6 +10,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(basePackages = {"edu.arelance.nube"})
 public class GestionExcepciones {
 	
+	Logger logger = LoggerFactory.getLogger(GestionExcepciones.class);
+	
+	
 	//para cada tipo de excepción / defino un método
 	@ExceptionHandler(StringIndexOutOfBoundsException.class)
 	public ResponseEntity<?> gestionStringOutIndexException (StringIndexOutOfBoundsException e)
@@ -15,7 +20,8 @@ public class GestionExcepciones {
 		ResponseEntity<?> responseEntity = null;
 		
 			responseEntity = ResponseEntity.internalServerError().body(e.getMessage());
-		
+			logger.error(e.getMessage(), e);
+			
 		return responseEntity;
 	}
 	
@@ -25,7 +31,8 @@ public class GestionExcepciones {
 		ResponseEntity<?> responseEntity = null;
 		
 			responseEntity = ResponseEntity.internalServerError().body(e.getMessage());
-		
+			logger.error(e.getMessage(), e);
+			
 		return responseEntity;
 	}
 	

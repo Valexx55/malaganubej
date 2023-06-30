@@ -1,7 +1,10 @@
 package edu.arelance.nube.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,6 +80,21 @@ public class RestauranteController {
 		return responseEntity;
 	}
 	
+	private ResponseEntity<?> generarRespuestaErroresValdicacion 
+	(BindingResult bindingResult)
+	{
+		ResponseEntity<?> responseEntity = null;
+		List<ObjectError> listaErrores = null;
+		
+			listaErrores = bindingResult.getAllErrors();
+			//imprimir los errores por el log
+			listaErrores.forEach(e -> logger.error(e.toString()));
+			
+			responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(listaErrores);
+		
+		return responseEntity;
+		
+	}
 	//http://localhost:8081/restaurante/12
 	 //* GET -> Consultar Uno (por ID) http://localhost:8081/restaurante/5
 	@Operation(description = "Este servicio consulta restaurantes por un id")
@@ -84,16 +104,21 @@ public class RestauranteController {
 		ResponseEntity<?> responseEntity = null;
 		Optional<Restaurante> or = null;
 		
+			logger.debug("En listarPorId " +id);
 			or = this.restauranteService.consultarRestaurante(id);
 			if (or.isPresent())
 			{ //la consulta ha recuperado un registro
+				
 				Restaurante restauranteLeido =  or.get();
 				responseEntity = ResponseEntity.ok(restauranteLeido);
+				logger.debug("Recuperado el registro " + restauranteLeido);
 				
 			}else {
 				////la consulta NO ha recuperado un registro
 				responseEntity = ResponseEntity.noContent().build();
+				logger.debug("El restaurante con " + id + " no existe");
 			}
+			logger.debug("Saliendo de listarPorId ");
 		
 		return responseEntity;
 	}
@@ -101,34 +126,54 @@ public class RestauranteController {
 	
 	//* POST -> Insertar un restaurante nuevo http://localhost:8081/restaurante (Body Restaurante)
 	@PostMapping
-	public ResponseEntity<?> insertarRestaurante (@RequestBody Restaurante restaurante)
+	public ResponseEntity<?> insertarRestaurante (@Valid @RequestBody Restaurante restaurante, BindingResult bindingResult)
 	{
 		ResponseEntity<?> responseEntity = null;
 		Restaurante restauranteNuevo = null;
 		
-			restauranteNuevo = this.restauranteService.altaRestaurante(restaurante);
-			responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(restauranteNuevo);
-		
+			//TODO validar
+			if (bindingResult.hasErrors()) {
+				logger.debug("Errores en la entrada POST");
+				responseEntity = generarRespuestaErroresValdicacion(bindingResult);
+				
+			}else {
+				logger.debug("SIN Errores en la entrada POST");
+				restauranteNuevo = this.restauranteService.altaRestaurante(restaurante);
+				responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(restauranteNuevo);
+			
+				
+			}
+			
 		return responseEntity;
 	}
 	
 	//* PUT -> Modificar un restaurante que ya existe http://localhost:8081/restaurante/id (Body Restaurante)
 	@PutMapping("/{id}")
 	public ResponseEntity<?> modificarRestaurante (
-			@RequestBody Restaurante restaurante, 
-			@PathVariable Long id)
+			@Valid @RequestBody Restaurante restaurante, 
+			@PathVariable Long id, BindingResult bindingResult)
 	{
 		ResponseEntity<?> responseEntity = null;
 		Optional<Restaurante> opRest = null;
 			
-			 opRest = this.restauranteService.modificarRestaurante(id, restaurante);
-			 if (opRest.isPresent())
+			 if (bindingResult.hasErrors())
 			 {
-				 Restaurante rm =  opRest.get();
-				 responseEntity = ResponseEntity.ok(rm);
+				 logger.debug("ERRORES en PUT");
+				 responseEntity = generarRespuestaErroresValdicacion(bindingResult);
+					
 			 } else {
-				 responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+				 logger.debug("SIN ERRORES en PUT");
+				 opRest = this.restauranteService.modificarRestaurante(id, restaurante);
+				 if (opRest.isPresent())
+				 {
+					 Restaurante rm =  opRest.get();
+					 responseEntity = ResponseEntity.ok(rm);
+				 } else {
+					 responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+				 }
+				 
 			 }
+			 
 		
 			 
 		return responseEntity;
