@@ -76,6 +76,16 @@ public class RestauranteServiceImpl implements RestauranteService{
 		return listaR;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Iterable<Restaurante> buscarPorBarrioNombreOEspecialidad(String clave) {
+		Iterable<Restaurante> listaRest = null;
+		
+			listaRest = this.restauranteRepository.buscarPorBarrioNombreOEspecialidad(clave);
+		
+		return listaRest;
+	}
+
 }
 
 

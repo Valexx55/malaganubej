@@ -3,6 +3,8 @@ package edu.arelance.nube.controller;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,12 +45,16 @@ public class RestauranteController {
 	@Autowired
 	RestauranteService restauranteService;
 	
+	Logger logger = LoggerFactory.getLogger(RestauranteController.class);
+	
+	
 	@GetMapping("/test") // GET http://localhost:8081/restaurante/test
 	public Restaurante obtenerRestauranteTest ()
 	{
 		Restaurante restaurante = null;
 		
 			System.out.println("Llamando a obtenerRestauranteTest");
+			logger.debug("estoy en obtenerRestauranteTest");
 			restaurante = new Restaurante(1l, "Martinete", "Carlos Haya 33", "Carranque", "www.martinete.org", "http://gogle.xe", 33.65f, -2.3f, 10, "gazpachuelo", "paella", "sopa de marisco", LocalDateTime.now());
 		
 		return restaurante;
@@ -152,6 +158,19 @@ public class RestauranteController {
 		Iterable<Restaurante> lista_Restaurantes = null;
 			
 			lista_Restaurantes = this.restauranteService.buscarPorRangoPrecio(preciomin, preciomax);
+			responseEntity = ResponseEntity.ok(lista_Restaurantes);
+		
+		return responseEntity;
+	}
+	
+	////GET http://localhost:8081/restaurante/buscarPorBarrioNombreOEspecialidad?clave=papa
+	@GetMapping("/buscarPorBarrioNombreOEspecialidad")
+	public ResponseEntity<?> buscarPorBarrioNombreOEspecialidad (@RequestParam(name = "clave") String clave)
+	{
+		ResponseEntity<?> responseEntity = null;
+		Iterable<Restaurante> lista_Restaurantes = null;
+			
+			lista_Restaurantes = this.restauranteService.buscarPorBarrioNombreOEspecialidad(clave);
 			responseEntity = ResponseEntity.ok(lista_Restaurantes);
 		
 		return responseEntity;

@@ -18,4 +18,5 @@ public interface RestauranteService {
 	
 	Iterable<Restaurante> buscarPorRangoPrecio (int preciomin, int preciomax);
 
+	Iterable<Restaurante> buscarPorBarrioNombreOEspecialidad (String clave);
 }
